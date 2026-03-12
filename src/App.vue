@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <h2>Task 3</h2>
+    <h2>Task 4</h2>
 
     <div class="form">
       <input
@@ -18,9 +18,21 @@
 
     <button @click="clearProducts">Очистити список</button>
 
+    <div class="filter">
+      <label>Фільтр за категорією: </label>
+      <select v-model="filter">
+        <option value="all">All</option>
+        <option value="Fruit">Fruits</option>
+        <option value="Vegetable">Vegetables</option>
+        <option value="Other">Other</option>
+      </select>
+    </div>
+
+    <p>Показано {{ filteredProducts.length }} із {{ products.length }}</p>
+
     <ul>
       <li
-        v-for="p in products"
+        v-for="p in filteredProducts"
         :key="p.id"
         :class="{ highlighted: p.category === 'Fruit' }"
       >
@@ -28,25 +40,35 @@
         <button @click="removeProduct(p.id)">Видалити</button>
       </li>
     </ul>
+
+    <p v-if="filteredProducts.length === 0">Нічого не знайдено</p>
   </div>
 </template>
 
 <script>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 
 export default {
   setup() {
     const products = ref([
       { id: 1, title: 'Apple', category: 'Fruit' },
       { id: 2, title: 'Carrot', category: 'Vegetable' },
-      { id: 3, title: 'Banana', category: 'Fruit' }
+      { id: 3, title: 'Banana', category: 'Fruit' },
+      { id: 4, title: 'Potato', category: 'Vegetable' }
     ])
 
     const newTitle = ref('')
     const newCategory = ref('Fruit')
 
+    const filter = ref('all')
+
+    const filteredProducts = computed(() => {
+      if (filter.value === 'all') return products.value
+      return products.value.filter(p => p.category === filter.value)
+    })
+
     const addProduct = () => {
-      if (!newTitle.value.trim()) return 
+      if (!newTitle.value.trim()) return
       const newId = products.value.length
         ? Math.max(...products.value.map(p => p.id)) + 1
         : 1
@@ -55,8 +77,8 @@ export default {
         title: newTitle.value,
         category: newCategory.value
       })
-      newTitle.value = '' 
-      newCategory.value = 'Fruit' 
+      newTitle.value = ''
+      newCategory.value = 'Fruit'
     }
 
     const removeProduct = (id) => {
@@ -71,6 +93,8 @@ export default {
       products,
       newTitle,
       newCategory,
+      filter,
+      filteredProducts,
       addProduct,
       removeProduct,
       clearProducts
@@ -85,7 +109,7 @@ export default {
   padding: 20px;
 }
 
-.form {
+.form, .filter {
   margin-bottom: 10px;
 }
 
@@ -114,6 +138,6 @@ li {
 }
 
 .highlighted {
-  background-color: rgb(215, 244, 254);
+  background-color: #cef4ff;
 }
 </style>
