@@ -1,18 +1,33 @@
 <template>
   <div class="container">
-    <h2>Task 2: v-if vs v-show</h2>
+    <h2>Task 3</h2>
 
-    <button @click="togglePanel">Показати / Сховати панель</button>
-
-    <hr>
-
-    <div v-if="isPanelVisible" class="panel">
-      <p>Ця панель керується v-if</p>
+    <div class="form">
+      <input
+        v-model="newTitle"
+        type="text"
+        placeholder="Назва продукту"
+      />
+      <select v-model="newCategory">
+        <option value="Fruit">Fruit</option>
+        <option value="Vegetable">Vegetable</option>
+        <option value="Other">Other</option>
+      </select>
+      <button @click="addProduct">Додати продукт</button>
     </div>
 
-    <div v-show="isPanelVisible" class="panel">
-      <p>Ця панель керується v-show</p>
-    </div>
+    <button @click="clearProducts">Очистити список</button>
+
+    <ul>
+      <li
+        v-for="p in products"
+        :key="p.id"
+        :class="{ highlighted: p.category === 'Fruit' }"
+      >
+        <strong>{{ p.title }}</strong> — {{ p.category }}
+        <button @click="removeProduct(p.id)">Видалити</button>
+      </li>
+    </ul>
   </div>
 </template>
 
@@ -21,15 +36,44 @@ import { ref } from 'vue'
 
 export default {
   setup() {
-    const isPanelVisible = ref(false)
+    const products = ref([
+      { id: 1, title: 'Apple', category: 'Fruit' },
+      { id: 2, title: 'Carrot', category: 'Vegetable' },
+      { id: 3, title: 'Banana', category: 'Fruit' }
+    ])
 
-    const togglePanel = () => {
-      isPanelVisible.value = !isPanelVisible.value
+    const newTitle = ref('')
+    const newCategory = ref('Fruit')
+
+    const addProduct = () => {
+      if (!newTitle.value.trim()) return 
+      const newId = products.value.length
+        ? Math.max(...products.value.map(p => p.id)) + 1
+        : 1
+      products.value.push({
+        id: newId,
+        title: newTitle.value,
+        category: newCategory.value
+      })
+      newTitle.value = '' 
+      newCategory.value = 'Fruit' 
+    }
+
+    const removeProduct = (id) => {
+      products.value = products.value.filter(p => p.id !== id)
+    }
+
+    const clearProducts = () => {
+      products.value = []
     }
 
     return {
-      isPanelVisible,
-      togglePanel
+      products,
+      newTitle,
+      newCategory,
+      addProduct,
+      removeProduct,
+      clearProducts
     }
   }
 }
@@ -41,17 +85,35 @@ export default {
   padding: 20px;
 }
 
-button {
-  margin: 5px 0;
-  padding: 6px 12px;
-  background-color: rgb(179, 233, 251);
-  border-width: 1px;
+.form {
+  margin-bottom: 10px;
 }
 
-.panel {
-  border: 1px solid #333;
+input, select {
+  padding: 5px;
+  margin-right: 5px;
+}
+
+button {
+  padding: 6px 12px;
+  margin: 2px;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+li {
+  border: 1px solid #ccc;
   padding: 10px;
-  margin: 10px 0;
-  background-color: rgb(226, 248, 255);
+  margin: 5px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.highlighted {
+  background-color: rgb(215, 244, 254);
 }
 </style>
