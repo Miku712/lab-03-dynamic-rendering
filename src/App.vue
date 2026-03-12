@@ -1,29 +1,17 @@
 <template>
   <div class="container">
-    <h2>Стан сторінки</h2>
+    <h2>Task 2: v-if vs v-show</h2>
 
-    <div v-if="isLoading">
-      Завантаження...
-    </div>
-    <div v-else-if="hasError">
-      Помилка завантаження
-    </div>
-    <div v-else-if="items.length === 0">
-      Немає даних
-    </div>
-    <ul v-else>
-      <li v-for="item in items" :key="item.id">
-        {{ item.name }}
-      </li>
-    </ul>
+    <button @click="togglePanel">Показати / Сховати панель</button>
 
     <hr>
 
-    <div class="buttons">
-      <button @click="toggleLoading">Toggle loading</button>
-      <button @click="toggleError">Toggle error</button>
-      <button @click="clearItems">Clear items</button>
-      <button @click="addItems">Add sample items</button>
+    <div v-if="isPanelVisible" class="panel">
+      <p>Ця панель керується v-if</p>
+    </div>
+
+    <div v-show="isPanelVisible" class="panel">
+      <p>Ця панель керується v-show</p>
     </div>
   </div>
 </template>
@@ -33,44 +21,15 @@ import { ref } from 'vue'
 
 export default {
   setup() {
-    const isLoading = ref(false)
-    const hasError = ref(false)
-    const items = ref([])
+    const isPanelVisible = ref(false)
 
-    const toggleLoading = () => {
-      isLoading.value = !isLoading.value
-      if (isLoading.value) {
-        hasError.value = false
-      }
-    }
-
-    const toggleError = () => {
-      hasError.value = !hasError.value
-      if (hasError.value) {
-        isLoading.value = false
-      }
-    }
-
-    const clearItems = () => {
-      items.value = []
-    }
-
-    const addItems = () => {
-      items.value = [
-        { id: 1, name: 'History' },
-        { id: 2, name: 'Math' },
-        { id: 3, name: 'English' },
-      ]
+    const togglePanel = () => {
+      isPanelVisible.value = !isPanelVisible.value
     }
 
     return {
-      isLoading,
-      hasError,
-      items,
-      toggleLoading,
-      toggleError,
-      clearItems,
-      addItems
+      isPanelVisible,
+      togglePanel
     }
   }
 }
@@ -83,9 +42,16 @@ export default {
 }
 
 button {
-  margin: 5px;
+  margin: 5px 0;
   padding: 6px 12px;
   background-color: rgb(179, 233, 251);
   border-width: 1px;
+}
+
+.panel {
+  border: 1px solid #333;
+  padding: 10px;
+  margin: 10px 0;
+  background-color: rgb(226, 248, 255);
 }
 </style>
